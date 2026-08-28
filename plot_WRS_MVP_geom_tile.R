@@ -62,41 +62,20 @@ df1 <- tibble(
   temp = MVP_temp_100
   )
 
-
-interp_temp <- with(
-  df1,
-  interp(
-    x = lon,
-    y = depth,
-    z = temp,
-    nx = 200,
-    ny = 200,
-    jitter = 1e-8
-  )
-)
-
-interp_df1 <- expand.grid(
-  lon = interp_temp$x,
-  depth = interp_temp$y
-)
-
-interp_df1$temp <- as.vector(interp_temp$z)
-
-ggp1 <- ggplot(interp_df1,
+ggp1 <- ggplot(df1,
        aes(x = lon, y = depth, fill = temp)) +
-  geom_raster() +
-#  geom_contour(aes(z = temp),
-#               colour = "black",
-#               alpha = 0.5) +
+  geom_tile() +
   scale_y_reverse() +
   scale_fill_cmocean(
-    name = "thermal"
+    name = "thermal",
+    limits = c(-2, 1.5),
+    oob = scales::squish,
   ) +
   labs(
     x = "Longitude (°E)",
     y = "Depth (m)"
   ) +
-  theme_bw()
+  guides(fill = guide_colourbar(direction = "horizontal", title.position = "top", title=expression("Temperature (\u00B0C)")))
 
 # Salinity
 df2 <- tibble(
@@ -105,41 +84,20 @@ df2 <- tibble(
   sal = MVP_sal_100
 )
 
-
-interp_sal <- with(
-  df2,
-  interp(
-    x = lon,
-    y = depth,
-    z = sal,
-    nx = 200,
-    ny = 200
-  )
-)
-
-interp_df2 <- expand.grid(
-  lon = interp_sal$x,
-  depth = interp_sal$y
-)
-
-interp_df2$sal <- as.vector(interp_sal$z)
-
-ggp2 <- ggplot(interp_df2,
+ggp2 <- ggplot(df2,
               aes(x = lon, y = depth, fill = sal)) +
-  geom_raster() +
-#  geom_contour(aes(z = sal),
-#               colour = "black",
-#               alpha = 0.5) +
+  geom_tile() +
   scale_y_reverse() +
   scale_fill_cmocean(
-    name = "haline"
+    name = "haline",
+    limits = c(34.2, 34.5),
+    oob = scales::squish
   ) +
   labs(
     x = "Longitude (°E)",
     y = "Depth (m)"
   ) +
-  theme_bw()
-
+  guides(fill = guide_colourbar(direction = "horizontal", title.position = "top", title=expression("Salinity")))
 
 # Chl a
 df3 <- tibble(
@@ -149,41 +107,20 @@ df3 <- tibble(
 #  chl = log10(MVP_chl_100)
 )
 
-
-interp_chl <- with(
-  df3,
-  interp(
-    x = lon,
-    y = depth,
-    z = chl,
-    nx = 300,
-    ny = 300
-  )
-)
-
-interp_df3 <- expand.grid(
-  lon = interp_chl$x,
-  depth = interp_chl$y
-)
-
-interp_df3$chl <- as.vector(interp_chl$z)
-
-ggp3 <- ggplot(interp_df3,
+ggp3 <- ggplot(df3,
                aes(x = lon, y = depth, fill = chl)) +
-  geom_raster() +
-#  geom_contour(aes(z = chlp),
-#               colour = "black",
-#               alpha = 0.5) +
+  geom_tile() +
   scale_y_reverse() +
   scale_fill_cmocean(
-    name = "algae"
+    name = "algae",
+    limits = c(1, 12),
+    oob = scales::squish
   ) +
   labs(
     x = "Longitude (°E)",
     y = "Depth (m)"
   ) +
-  theme_bw()
-
+  guides(fill = guide_colourbar(direction = "horizontal", title.position = "top", title=expression("Chlorophyll (mg m"^"-3"*")")))
 
 # sigmat
 df4 <- tibble(
@@ -192,41 +129,24 @@ df4 <- tibble(
   sigmat = MVP_sigmat_100
 )
 
-
-interp_sigmat <- with(
-  df4,
-  interp(
-    x = lon,
-    y = depth,
-    z = sigmat,
-    nx = 200,
-    ny = 200
-  )
-)
-
-interp_df4 <- expand.grid(
-  lon = interp_sigmat$x,
-  depth = interp_sigmat$y
-)
-
-interp_df4$sigmat <- as.vector(interp_sigmat$z)
-
-ggp4 <- ggplot(interp_df4,
+ggp4 <- ggplot(df4,
                aes(x = lon, y = depth, fill = sigmat)) +
-  geom_raster() +
+  geom_tile() +
 #  geom_contour(aes(z = sigmat),
 #               colour = "black",
 #               alpha = 0.5) +
   scale_y_reverse() +
   scale_fill_cmocean(
-    name = "dense"
+    name = "dense",
+    limits = c(27.3, 27.8),
+    breaks = c(27.3, 27.5, 27.7),
+    oob = scales::squish
   ) +
   labs(
     x = "Longitude (°E)",
     y = "Depth (m)"
   ) +
-  theme_bw()
-
+  guides(fill = guide_colourbar(direction = "horizontal", title.position = "top", title=expression("Density (kg m"^"-3"*")")))
 
 # lopc
 # NaNs in lopc data need to be removed
@@ -240,66 +160,20 @@ df5 <- tibble(
   lopc  = MVP_lopc_100[good]
 )
 
-
-interp_lopc <- with(
-  df5,
-  interp(
-    x = lon,
-    y = depth,
-    z = lopc,
-    nx = 200,
-    ny = 200
-  )
-)
-
-interp_df5 <- expand.grid(
-  lon = interp_lopc$x,
-  depth = interp_lopc$y
-)
-
-interp_df5$lopc <- as.vector(interp_lopc$z)
-
-ggp5 <- ggplot(interp_df5,
+ggp5 <- ggplot(df5,
                aes(x = lon, y = depth, fill = lopc)) +
-  geom_raster() +
-#  geom_contour(aes(z = lopc),
-#              colour = "black",
-#               alpha = 0.5) +
+  geom_tile() +
   scale_y_reverse() +
   scale_fill_cmocean(
-    name = "matter"
+    name = "matter",
+    limits = c(0, 5000)
   ) +
   labs(
     x = "Longitude (°E)",
     y = "Depth (m)"
-  ) +
-  theme_bw()
-
-
-# sal/sigmat
-
-ggp6 <- ggplot(interp_df2,
-               aes(x = lon, y = depth, fill = sal)) +
-  geom_raster() +
-    geom_contour(aes(z = interp_df4$sigmat),
-                 colour = "black",
-                 formatter = label_number(accuracy = 0.1),
-                 alpha = 0.5) +
-  geom_text_contour(aes(z = interp_df4$sigmat),
-    size = 3
-  ) +
-    scale_y_reverse() +
-  scale_fill_cmocean(
-    name = "haline"
-  ) +
-  labs(
-    x = "Longitude (°E)",
-    y = "Depth (m)"
-  ) +
-  theme_bw()
-
+  )
 
 # plot results
-ggp1/ggp2/ggp3/ggp5 + plot_layout(axes = "collect")
-
+ggp1/ggp2/ggp4/ggp3 + plot_layout(axes = "collect")
+ggsave("MVP_geom_tile.png", units="in", width=8.8, height=5.65, dpi=1200, scale = 1.25)
 
